@@ -9,6 +9,10 @@ public class EstablishedPhysics : MonoBehaviour
     [SerializeField] private float angularVelocity;
     [SerializeField] private Rigidbody2D rb;
 
+    private Vector2 currentVelocity;
+    private float currentAngleVelocity;
+    private bool paused;
+
     [SerializeField] private Vector2 cameraBounds;
 
     // Start is called before the first frame update
@@ -16,8 +20,7 @@ public class EstablishedPhysics : MonoBehaviour
     {
         rb.velocity = velocity;
         rb.angularVelocity = angularVelocity;
-
-
+        paused = false;
     }
 
     // Update is called once per frame
@@ -34,5 +37,29 @@ public class EstablishedPhysics : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * -1);
         }
 
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(paused)
+            {
+                rb.angularVelocity = currentAngleVelocity;
+                rb.velocity = currentVelocity;
+                paused = false;
+            }
+            else
+            {
+                currentAngleVelocity = rb.angularVelocity;
+                currentVelocity = rb.velocity;
+
+                rb.angularVelocity = 0;
+                rb.velocity = new Vector2(0, 0);
+
+                paused = true;
+            }
+            
+        }
     }
 }
