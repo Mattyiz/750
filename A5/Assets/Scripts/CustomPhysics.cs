@@ -8,7 +8,8 @@ public class CustomPhysics : MonoBehaviour
     [SerializeField] private Vector2 velocity;
     [SerializeField] private float angularVelocity;
     [SerializeField] private Collider2D collider;
-
+    [SerializeField] private Collider2D collider2;
+    [SerializeField] private LayerMask layer;
 
     private Vector2 currentVelocity;
     private float currentAngleVelocity;
@@ -25,6 +26,9 @@ public class CustomPhysics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (paused)
@@ -59,7 +63,19 @@ public class CustomPhysics : MonoBehaviour
         if ((transform.position.y >= cameraBounds.y && velocity.y > 0) || (transform.position.y <= cameraBounds.y * -1 && velocity.y < 0))
         {
             velocity = new Vector2(velocity.x, velocity.y * -1);
+
         }
 
+        /*if (collider.IsTouchingLayers(layer))
+        {
+        }*/
+
     }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        velocity = new Vector2(velocity.x * -1, velocity.y * -1);
+
+    }
+
 }
