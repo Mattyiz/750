@@ -29,5 +29,10 @@ public class InputManager : MonoBehaviour
         {
             SceneManager.LoadScene("CustomPhysics");
         }
+
+        if (Input.GetKey("escape"))
+        {
+            Application.Quit();
+        }
     }
 }
