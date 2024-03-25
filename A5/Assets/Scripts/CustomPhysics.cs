@@ -5,8 +5,8 @@ using UnityEngine;
 public class CustomPhysics : MonoBehaviour
 {
 
-    [SerializeField] private Vector2 velocity;
-    [SerializeField] private float angularVelocity;
+    [SerializeField] public Vector2 velocity;
+    [SerializeField] public float angularVelocity;
     [SerializeField] private Collider2D collider;
     [SerializeField] private Collider2D collider2;
     [SerializeField] private LayerMask layer;
@@ -21,6 +21,8 @@ public class CustomPhysics : MonoBehaviour
     void Start()
     {
         paused = false;
+        currentVelocity = velocity;
+        currentAngleVelocity = angularVelocity;
     }
 
     // Update is called once per frame
@@ -34,7 +36,7 @@ public class CustomPhysics : MonoBehaviour
             if (paused)
             {
                 angularVelocity = currentAngleVelocity;
-                velocity = currentVelocity;
+                //velocity = currentVelocity;
                 paused = false;
             }
             else
@@ -47,22 +49,29 @@ public class CustomPhysics : MonoBehaviour
 
                 paused = true;
             }
-
         }
+
+        if(!paused)
+        {
+            velocity = currentVelocity;
+            angularVelocity = currentAngleVelocity;
+        }
+
     }
 
     void FixedUpdate()
     {
         transform.position += new Vector3 (velocity.x, velocity.y, 0);
+        transform.Rotate(0, 0, angularVelocity, Space.Self);
 
         if ((transform.position.x >= cameraBounds.x && velocity.x > 0) || (transform.position.x <= cameraBounds.x * -1 && velocity.x < 0))
         {
-            velocity = new Vector2(velocity.x * -1, velocity.y);
+            currentVelocity = new Vector2(velocity.x * -1, velocity.y);
         }
 
         if ((transform.position.y >= cameraBounds.y && velocity.y > 0) || (transform.position.y <= cameraBounds.y * -1 && velocity.y < 0))
         {
-            velocity = new Vector2(velocity.x, velocity.y * -1);
+            currentVelocity = new Vector2(velocity.x, velocity.y * -1);
 
         }
 
@@ -74,7 +83,33 @@ public class CustomPhysics : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        velocity = new Vector2(velocity.x * -1, velocity.y * -1);
+
+        if((velocity.x > 0 && collision.collider.GetComponent<CustomPhysics>().velocity.x > 0) || (velocity.x < 0 && collision.collider.GetComponent<CustomPhysics>().velocity.x < 0))
+        {
+            currentVelocity.x = (velocity.x + (collision.collider.GetComponent<CustomPhysics>().velocity.x * .9f))/2;
+        }
+        else
+        {
+            currentVelocity.x = velocity.x + (collision.collider.GetComponent<CustomPhysics>().velocity.x * 1.1f);
+        }
+
+        if ((velocity.y > 0 && collision.collider.GetComponent<CustomPhysics>().velocity.y > 0) || (velocity.y < 0 && collision.collider.GetComponent<CustomPhysics>().velocity.y < 0))
+        {
+            currentVelocity.y = (velocity.y + (collision.collider.GetComponent<CustomPhysics>().velocity.y * .9f))/ 2;
+        }
+        else
+        {
+            currentVelocity.y = velocity.y + (collision.collider.GetComponent<CustomPhysics>().velocity.y * 1.1f);
+        }
+
+        if ((angularVelocity > 0 && collision.collider.GetComponent<CustomPhysics>().angularVelocity > 0) || (angularVelocity < 0 && collision.collider.GetComponent<CustomPhysics>().angularVelocity < 0))
+        {
+            currentAngleVelocity = (angularVelocity + (collision.collider.GetComponent<CustomPhysics>().angularVelocity * .9f)) / 2;
+        }
+        else
+        {
+            currentAngleVelocity = angularVelocity + (collision.collider.GetComponent<CustomPhysics>().angularVelocity * 1.1f);
+        }
 
     }
 
